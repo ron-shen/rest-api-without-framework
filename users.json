@@ -1,0 +1,17 @@
+{
+    "1": {
+        "username": "Alaxander",
+        "location": "San Francisco",
+        "role": "Developer"
+    },
+    "2": {
+        "username": "Christopher",
+        "location": "New York",
+        "role": "Developer"
+    },
+    "3": {
+        "username": "Diane",
+        "location": "Los Angeles",
+        "role": "Designer"
+    }
+}

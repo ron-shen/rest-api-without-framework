@@ -1,37 +1,47 @@
-from http.server import HTTPServer, BaseHTTPRequestHandler, SimpleHTTPRequestHandler
+from http.server import HTTPServer, BaseHTTPRequestHandler
 import json
-import time
+import re
 
 with open('./users.json') as datafile:
     users = json.load(datafile)
 
+def get_all_users(*args):
+    return json.dumps(users).encode()
+
+def get_user(*args):
+    path = args[0]
+    id = path.split("/")[-2]
+    try:
+        user = users[id]
+        return json.dumps(user).encode()
+    except KeyError:
+        raise KeyError("User doesn't exist")
+
+url_path = [["^/users+/$", get_all_users], ["^/users/+\d+/$", get_user]]
+
 
 class ServiceHandler(BaseHTTPRequestHandler):
-    def do_GET(self): 
-        #print(self.wfile.raw)
-        #setting response header fields
-        self.send_response(200)
-        self.send_header('Content-type','text/json')
-        #add a blank line to indicate end of header
-        self.end_headers()
-        print(type(self.wfile._sock))
-        #message body
-        self.wfile.write(json.dumps(users).encode())
-        #self.wfile.write(json.dumps(users).encode())
-        # print("requestline:", self.requestline)
-        # print("raw_requestline:", self.raw_requestline)
-        #print("headers:", self.headers)
-        # print("command:", self.command)
-        # print("path:", self.path)
-        # print("request_version:", self.request_version)
+    def do_GET(self):
+        function = None
+        for path, fun in url_path:
+            if re.match(path, self.path):
+                function = fun
+                break
+        try:
+            data = function(self.path)
+            self.send_response(200)
+            self.send_header('Content-type','text/json')
+            self.send_header('Content-Length',999)
+            self.end_headers()
+            self.wfile.write(data)
+        except Exception as error:
+            print(repr(error))
+            self.send_response(404)
+            self.end_headers()
+
 
     def do_POST(self):
-        print("requestline:", self.requestline)
-        print("raw_requestline:", self.raw_requestline)
-        print("headers:", self.headers)
-        print("command:", self.command)
-        print("path:", self.path)
-        print("request_version:", self.request_version)
+        pass
 
     def do_PUT(self):
         pass

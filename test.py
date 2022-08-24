@@ -1,14 +1,8 @@
-import re
 
-url_path = ["^/users+/$", 
-            "^/users/+\d+/$"
-            ]
-
-# import re
+from importlib.resources import as_file
 
 
-test_string = "/users/"
-result = re.match(url_path[0], test_string)
-print(result)
+d = {1:2, 2:3}
+print(len(d))
 
 

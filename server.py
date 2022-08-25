@@ -1,6 +1,7 @@
 from http.server import HTTPServer, BaseHTTPRequestHandler
 import json
 import re
+from copy import deepcopy
 
 with open('./users.json') as datafile:
     users = json.load(datafile)
@@ -62,10 +63,33 @@ class ServiceHandler(BaseHTTPRequestHandler):
             self.send_response(400)
             self.end_headers()            
 
-    def do_PUT(self):
-        pass
 
-       
+    def do_PUT(self):
+        if not self._valid_path():
+            return
+        
+        data = self._read_data()
+        id = data[0]
+        try:
+            user = deepcopy(users[id])
+            if len(data) - 1 != len(user):
+                raise ValueError(f"Number of given attributes don't match to attributes in id {id}...")
+            for i in range(1, len(data)):
+                key, value = data[i].split('=')
+                if key not in user:
+                    raise KeyError(f"Key {key} doesn't exist...")
+                user[key] = value
+            with open("./users.json",'w+') as file_data:
+                users[id] = user
+                json.dump(users, file_data)
+            self.send_response(200)
+            self.end_headers()           
+        except Exception as error:
+            print(repr(error))
+            self.send_response(400, error)
+            self.end_headers()
+
+
     def do_PATCH(self):
         if not self._valid_path():
             return
@@ -73,19 +97,20 @@ class ServiceHandler(BaseHTTPRequestHandler):
         data = self._read_data()
         id = data[0]
         try:
-            user = users[id]
+            user = deepcopy(users[id])
             for i in range(1, len(data)):
                 key, value = data[i].split('=')
                 if key not in user:
                     raise KeyError(f"Key {key} doesn't exist...")
                 user[key] = value
             with open("./users.json",'w+') as file_data:
+                users[id] = user
                 json.dump(users, file_data)
             self.send_response(200)
             self.end_headers() 
         except KeyError as error:
             print(repr(error))
-            self.send_response(400)
+            self.send_response(400, error)
             self.end_headers()
 
 

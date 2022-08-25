@@ -40,10 +40,9 @@ class ServiceHandler(BaseHTTPRequestHandler):
             self.send_response(404)
             self.end_headers()
 
+
     def do_POST(self):
-        if self.path != "/users/":
-            self.send_response(404)
-            self.end_headers()
+        if not self._valid_path():
             return
 
         data = self._read_data()
@@ -52,8 +51,7 @@ class ServiceHandler(BaseHTTPRequestHandler):
         try:
             for key_val in data:
                 key, value = key_val.split('=')
-                data_dict[key] = value
-            
+                data_dict[key] = value          
             users[id] = data_dict
             with open("./users.json",'w+') as file_data:
                 json.dump(users, file_data)
@@ -69,9 +67,7 @@ class ServiceHandler(BaseHTTPRequestHandler):
 
        
     def do_PATCH(self):
-        if self.path != "/users/":
-            self.send_response(404)
-            self.end_headers()
+        if not self._valid_path():
             return
 
         data = self._read_data()
@@ -83,21 +79,43 @@ class ServiceHandler(BaseHTTPRequestHandler):
                 if key not in user:
                     raise KeyError(f"Key {key} doesn't exist...")
                 user[key] = value
-
             with open("./users.json",'w+') as file_data:
                 json.dump(users, file_data)
-
             self.send_response(200)
             self.end_headers() 
-
         except KeyError as error:
             print(repr(error))
             self.send_response(400)
             self.end_headers()
 
+
     def do_DELETE(self):
-        pass
-    
+        if not self._valid_path():
+            return
+
+        data = self._read_data()
+        id = data[0]
+        try:
+            del users[id]
+            with open("./users.json",'w+') as file_data:
+                json.dump(users, file_data)
+            self.send_response(200)
+            self.end_headers()       
+        except KeyError as error:
+            print(repr(error))
+            self.send_response(400, f"key {id} doesn't exist")
+            self.end_headers()
+
+
+    def _valid_path(self):
+        if self.path != "/users/":
+            self.send_response(404)
+            self.end_headers()
+            return False
+
+        return True
+
+
     def _read_data(self):
         length = int(self.headers["Content-Length"])
         data = self.rfile.read(length).decode()

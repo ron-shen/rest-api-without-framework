@@ -13,7 +13,7 @@ def get_user(*args):
     path = args[0]
     id = path.split("/")[-2]
     try:
-        user = users[id]
+        user = {id: users[id]}
         return json.dumps(user).encode()
     except KeyError:
         raise KeyError("User doesn't exist")
@@ -47,7 +47,7 @@ class ServiceHandler(BaseHTTPRequestHandler):
             return
 
         data = self._read_data()
-        id = len(users) + 1
+        id = str(len(users) + 1)
         data_dict = {}
         try:
             for key_val in data:

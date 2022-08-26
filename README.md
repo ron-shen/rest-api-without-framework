@@ -1,7 +1,6 @@
 # rest-api-without-framework
-learn REST API
+Learn REST API
 
-curl -X PUT -d "1.username=Ron&location=Canada&role=Developer" 127.0.0.1:8080/users/
 # METHODS
 ```
 Get all users: curl -X GET 127.0.0.1:8080/users/
@@ -24,8 +23,10 @@ curl -X DELETE -d "1" 127.0.0.1:8080/users/
 
 # HTTP headers
 Request headers: Can be used in an HTTP request to provide information about the request context. Clients can add some header fields like Accept and Host
-Reponse headers: can be used in an HTTP response and that doesn't relate to the content of the message. Response header fields like Age, Location or Server are used to give a more detailed context of the response.
-Representation headers: provide fields describing how to interpret the representation data enclosed in the payload body. e.g. Content-Encoding, Content-Language, Content-Type, Content-Length...
+
+Reponse headers: Can be used in an HTTP response and that doesn't relate to the content of the message. Response header fields like Age, Location or Server are used to give a more detailed context of the response.
+
+Representation headers: Provide fields describing how to interpret the representation data enclosed in the payload body. e.g. Content-Encoding, Content-Language, Content-Type, Content-Length...
 
 HTTP request message
 --- | 

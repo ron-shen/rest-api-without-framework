@@ -1,7 +1,7 @@
 # rest-api-without-framework
 Learn REST API
 
-# METHODS
+# Methods
 ```
 Get all users: curl -X GET 127.0.0.1:8080/users/
 Get a specific user: curl -X GET 127.0.0.1:8080/users/{id}/
